@@ -28,7 +28,11 @@ void ofApp::setup(){
     
     output.allocate(w,h,OF_IMAGE_COLOR);
     
-    font.load("Montserrat.ttf", 20);
+    if(!movenet.setup("model")) {
+        std::exit(EXIT_FAILURE);
+    }
+    
+    //font.load("Montserrat.ttf", 20);
 }
 
 //--------------------------------------------------------------
@@ -37,6 +41,15 @@ void ofApp::update(){
     if (kinect.isFrameNew()){
         colorImage.setFromPixels(kinect.getPixels());
         grayImage.setFromPixels(kinect.getDepthPixels());
+       
+        // pass in video input to movenet
+        ofPixels pixels(kinect.getPixels());
+        pixels.resize(nnWidth, nnHeight);
+        movenet.setInput(pixels);
+        
+        // output rgb video from kinect
+        output.setFromPixels(kinect.getPixels());
+        output.mirror(false, true);
         
         absdiff(kinect,prevPx,imgDiff);
         imgDiff.update();
@@ -48,18 +61,25 @@ void ofApp::update(){
         contourFinder.findContours(grayImage, 30, (w*h), 10, true);
                 
     }
+    
+    // run model on current input frame
+    movenet.update();
 }
 
 //--------------------------------------------------------------
 void ofApp::exit(){
     kinect.setCameraTiltAngle(0);
     kinect.close();
+    movenet.stopThread();
 }
 
 //--------------------------------------------------------------
 void ofApp::draw(){
-    //kinect.draw(0,0,w,h);
+    kinect.draw(0,0,w,h);
+    //output.draw(0,0,w,h);
+    movenet.draw();
     
+    /* // POLYLINE OFFSET INTERACTION
     ofSetColor(0);
     for (int i = 0; i < kinect.getHeight(); i+=8){
         ofPolyline polyline;
@@ -72,6 +92,7 @@ void ofApp::draw(){
         polyline = polyline.getSmoothed(10);
         polyline.draw();
     }
+     */
 }
 
 //--------------------------------------------------------------

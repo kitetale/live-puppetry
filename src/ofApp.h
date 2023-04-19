@@ -4,6 +4,7 @@
 #include "ofxKinect.h"
 #include "ofxOpenCv.h"
 #include "ofxCv.h"
+#include "ofxMovenet.h"
 
 using namespace ofxCv;
 using namespace cv;
@@ -46,4 +47,10 @@ class ofApp : public ofBaseApp{
     int nearClip,farClip;
     int angle;
 
+    
+    // TensorFlow ML model for Skeleton
+    ofxMovenet movenet;
+    // neural net input size
+    std::size_t nnWidth = 640; //640
+    std::size_t nnHeight = 480; //480
 };

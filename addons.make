@@ -1,4 +1,4 @@
 ofxOpenCv
 ofxCv
 ofxKinect
-ofxNI2
+ofxTensorFlow2
