@@ -32,36 +32,53 @@ void ofApp::setup(){
         std::exit(EXIT_FAILURE);
     }
     
+    #ifdef USE_VIDEO
+        video.load("production ID 3873059_2.mp4");
+        //video.load("shadow_videos/4.mov");
+        video.play();
+    #endif
+    
     //font.load("Montserrat.ttf", 20);
 }
 
 //--------------------------------------------------------------
 void ofApp::update(){
-    kinect.update();
-    if (kinect.isFrameNew()){
-        colorImage.setFromPixels(kinect.getPixels());
-        grayImage.setFromPixels(kinect.getDepthPixels());
-       
-        // pass in video input to movenet
-        ofPixels pixels(kinect.getPixels());
-        pixels.resize(nnWidth, nnHeight);
-        movenet.setInput(pixels);
-        
-        // output rgb video from kinect
-        output.setFromPixels(kinect.getPixels());
-        output.mirror(false, true);
-        
-        absdiff(kinect,prevPx,imgDiff);
-        imgDiff.update();
-        imgDiff.mirror(false, true);
-        copy(kinect,prevPx);
-        
-        grayDiff.absDiff(grayBg, grayImage);
-        grayDiff.threshold(grayThreshold);
-        contourFinder.findContours(grayImage, 30, (w*h), 10, true);
-                
-    }
-    
+    #ifdef USE_VIDEO
+        video.update();
+        if(video.isFrameNew()) {
+            ofPixels pixels(video.getPixels());
+            pixels.resize(nnWidth, nnHeight);
+            // pass in video input to movenet
+            movenet.setInput(pixels);
+        }
+    #else
+        kinect.update();
+        if (kinect.isFrameNew()){
+            ofPixels pix(kinect.getPixels());
+            pix.resize(nnWidth, nnHeight);
+            colorImage.setFromPixels(pix);
+            ofPixels depthPix(kinect.getDepthPixels());
+            depthPix.resize(nnWidth, nnHeight);
+            grayImage.setFromPixels(depthPix);
+           
+            // pass in video input to movenet
+            movenet.setInput(pix);
+            
+            // output rgb video from kinect
+            output.setFromPixels(pix);
+            output.mirror(false, true);
+            
+            absdiff(kinect,prevPx,imgDiff);
+            imgDiff.update();
+            imgDiff.mirror(false, true);
+            copy(kinect,prevPx);
+            
+            grayDiff.absDiff(grayBg, grayImage);
+            grayDiff.threshold(grayThreshold);
+            contourFinder.findContours(grayImage, 30, (w*h), 10, true);
+                    
+        }
+    #endif
     // run model on current input frame
     movenet.update();
 }
@@ -75,8 +92,12 @@ void ofApp::exit(){
 
 //--------------------------------------------------------------
 void ofApp::draw(){
-    kinect.draw(0,0,w,h);
-    //output.draw(0,0,w,h);
+    #ifdef USE_VIDEO
+        video.draw(0,0);
+    #else
+        //kinect.draw(0,0,nnWidth,nnHeight);
+    #endif
+    output.draw(0,0,nnWidth,nnHeight);
     movenet.draw();
     
     /* // POLYLINE OFFSET INTERACTION

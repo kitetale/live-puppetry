@@ -9,6 +9,8 @@
 using namespace ofxCv;
 using namespace cv;
 
+//#define USE_VIDEO
+
 class ofApp : public ofBaseApp{
 
 	public:
@@ -41,6 +43,8 @@ class ofApp : public ofBaseApp{
     bool learnBg;
     ofImage output; //ofImage for saving to os
     
+    ofVideoPlayer video;
+    
     ofTrueTypeFont font;
     
     int h,w;
@@ -51,6 +55,6 @@ class ofApp : public ofBaseApp{
     // TensorFlow ML model for Skeleton
     ofxMovenet movenet;
     // neural net input size
-    std::size_t nnWidth = 640; //640
-    std::size_t nnHeight = 480; //480
+    std::size_t nnWidth = 1280; //640
+    std::size_t nnHeight = 960; //480
 };
