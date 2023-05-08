@@ -30,10 +30,20 @@ class ofApp : public ofBaseApp{
     
     ofSpherePrimitive sphere;
     vector<ofSpherePrimitive> handSpheres;
-    ofSpherePrimitive head, legL, legR, eyeL, eyeR, nose;
+    //ofSpherePrimitive head, legL, legR, eyeL, eyeR, nose;
     
+    bool handClosed;
+    bool thumbSpread;
+    bool pinkySpread;
+    float closedAmount; //closed 0~1 open
+    float thumbSpreadAmount; //spread 0~1 closed
+    float pinkySpreadAmount; //spread 0~1 closed
     
-    ofLight light;
+    float zScale;
+    
+    float rotDeg;
+    
+    ofLight light, light2, light3, light4;
     
     string curFileInfo;
     
@@ -45,10 +55,10 @@ class ofApp : public ofBaseApp{
     //hand : https://developers.google.com/mediapipe/solutions/vision/hand_landmarker
     float oscx = 0.0; float oscy = 0.0; //wrist
     vector<float> handXs, handYs;
+    bool handOnScreen;
     
     float w, h;
     
-    ofxFloatSlider rad, deform, deformFreq, extrude;
     ofxFloatSlider camXPos, camYPos, camZPos;
     ofParameter<bool> showHand = {"Show Hand", false};
     ofxPanel gui;
