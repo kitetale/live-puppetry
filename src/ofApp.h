@@ -1,16 +1,11 @@
 #pragma once
 
 #include "ofMain.h"
-#include "ofxKinect.h"
-#include "ofxOpenCv.h"
-#include "ofxCv.h"
-#include "Thinning.h"
-#include "Contour.h"
+#include "ofxOsc.h"
+#include "ofxGui.h"
+#include "ofxAssimpModelLoader.h"
 
-using namespace ofxCv;
-using namespace cv;
-
-#define USE_VIDEO
+#define PORT 9527
 
 class ofApp : public ofBaseApp{
 
@@ -18,8 +13,6 @@ class ofApp : public ofBaseApp{
 		void setup();
 		void update();
 		void draw();
-        void exit();
-        void reconstituteBlobsFromContours(vector<vector<cv::Point>> &contours, int w, int h);
 
 		void keyPressed(int key);
 		void keyReleased(int key);
@@ -32,47 +25,34 @@ class ofApp : public ofBaseApp{
 		void windowResized(int w, int h);
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
+		
+    ofxAssimpModelLoader model;
+    ofSpherePrimitive sphere;
+    //ofSpherePrimitive s1,s2,s3,s4,s5,s6,s7,s8,s9,s10,s11,s12,s13,s14,s15,s16,s17,s18,s19,s20;
+    vector<ofSpherePrimitive> handSpheres;
+    ofLight light;
     
-    ofVideoPlayer video;
-    ofxKinect kinect;
+    string curFileInfo;
     
-    int w,h;
-    float scale;
-    int nearClip,farClip;
-    int angle;
+    ofEasyCam cam;
+    float cameraOrbit;
     
+    ofxOscReceiver osc;
     
-    float minContourSize, maxContourSize;
-    int depthDilate; // num of dilates applied to depth img
-    int depthErode; // num of erode applied to depth img
-    int depthBlur; // amount of blur applied to depth img
+    //hand : https://developers.google.com/mediapipe/solutions/vision/hand_landmarker
+    float oscx = 0.0; float oscy = 0.0; //wrist
+    float x1,y1,x2,y2,x3,y3,x4,y4; //thumb
+    float x5,y5,x6,y6,x7,y7,x8,y8; //index
+    float x9,y9,x10,y10,x11,y11,x12,y12; //middle
+    float x13,y13,x14,y14,x15,y15,x16,y16; //ring
+    float x17,y17,x18,y18,x19,y19,x20,y20; //pinky
+    vector<float> handXs, handYs;
     
-    ofImage depthImage, depthOriginal, bgOriginal;
-    ofxCvGrayscaleImage grayDiff, grayDepthImage, bgImage;
-    ofImage grayThreshNear;
-    ofImage grayThreshFar;
-    int grayThreshold;
+    float w, h;
     
-    bool learnBg;
-    
-    // for adjusting cam view area, if needed
-    Mat depthCroppingMask;
-    float depthLeftMask, depthRightMask;
-    float depthTopMask, depthBottomMask;
-    
-    ContourFinder contourFinder;
-    Contour contour;
-    int minBlobSize;
-    int maxBlobSize;
-    int contourThickness;
-    int buffW, buffH;
-    
-    Mat filledContourMat;
-    ofImage filledContourImg, skeletonImg;
-    ofFbo fbo;
-    vector<vector<cv::Point>> theContoursi;
-    
-    ofxCvColorImage inputImg;
-    
-    Thinning skeletonizer;
+    ofxFloatSlider rad, deform, deformFreq, extrude;
+    ofxFloatSlider camXPos, camYPos, camZPos;
+    ofParameter<bool> showHand = {"Show Hand", true};
+    ofxPanel gui;
+        
 };
